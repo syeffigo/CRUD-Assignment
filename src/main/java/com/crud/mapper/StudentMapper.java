@@ -6,8 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import com.crud.dto.StudentDTO;
 import com.crud.model.Student;
-import com.crud.model.StudentDTO;
 
 @Mapper(componentModel = "spring")
 public interface StudentMapper {
@@ -18,6 +18,8 @@ public interface StudentMapper {
 	@Mapping(source = "name", target = "name")
 	@Mapping(source = "department", target = "department")
 	StudentDTO convertToDTO(Student student);
-
+	
 	List<StudentDTO> convertToDTOList(List<Student> students);
+	
+	Student studentDTOToStudent(StudentDTO studentDTO);
 }

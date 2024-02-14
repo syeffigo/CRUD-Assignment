@@ -13,34 +13,39 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.crud.dto.StudentDTO;
 import com.crud.mapper.StudentMapper;
 import com.crud.model.Student;
-import com.crud.model.StudentDTO;
 import com.crud.repository.StudentRepository;
+import com.crud.service.StudentService;
 
 @RestController
-public class ApiController {
+public class StudentController {
 
 	@Autowired
 	private StudentRepository studentRepository;
 
 	@Autowired
 	private StudentMapper studentMapper;
+	
+	@Autowired
+	private StudentService studentService;
 
 	@GetMapping("/read")
 	private ResponseEntity<List<StudentDTO>> getAllStudentsRecord() {
-		List<Student> students = studentRepository.findAll();
-		List<StudentDTO> data = studentMapper.convertToDTOList(students);
-
-		return ResponseEntity.ok(data);
+        List<StudentDTO> data = studentService.getAllStudents();
+        return ResponseEntity.ok(data);
+	}
+	
+	@GetMapping("/native")
+	private String getPassword(@RequestBody String email) {
+		return studentService.getPassword(email);
 	}
 
 	@GetMapping("/read/{id}")
 	private ResponseEntity<?> getStudentRecordById(@PathVariable Integer id) {
 		try {
-			Student student = studentRepository.getById(id);
-			StudentDTO data = studentMapper.convertToDTO(student);
-
+	         StudentDTO data = studentService.getStudent(id);
 			return ResponseEntity.ok(data);
 		} catch (Exception e) {
 			String errorMessage = "Student with ID " + id + " not found. Please update the id.";
@@ -49,39 +54,15 @@ public class ApiController {
 	}
 
 	@PostMapping("/create")
-	private ResponseEntity<String> createStudentRecord(@RequestBody Student student) {
-
-		boolean checkEmailExist = studentRepository.existsByEmail(student.getEmail());
-
-		if (checkEmailExist) {
-			return ResponseEntity.ok("Can't Add this Student. As Email Id already exists");
-		}
-		studentRepository.save(student);
-
-		return ResponseEntity.ok("Student Record Added Successfully");
+	private ResponseEntity<String> createStudentRecord(@RequestBody StudentDTO studentDTO) {
+           String result = studentService.createStudentRecord(studentDTO);
+           return ResponseEntity.ok(result);
 	}
 
 	@PutMapping("/update/{id}")
-	private ResponseEntity<?> updateStudentRecord(@PathVariable Integer id, @RequestBody Student student) {
+	private ResponseEntity<?> updateStudentRecord(@PathVariable Integer id, @RequestBody StudentDTO studentDTO) {
 		try {
-			Student data = studentRepository.getById(id);
-
-			if (student.getEmail() != null) {
-				data.setEmail(student.getEmail());
-			}
-
-			if (student.getName() != null) {
-				data.setName(student.getName());
-			}
-
-			if (student.getDepartment() != null) {
-				data.setDepartment(student.getDepartment());
-			}
-
-			studentRepository.save(data);
-
-			StudentDTO dto = studentMapper.convertToDTO(data);
-
+            StudentDTO dto = studentService.updateStudentRecord(id, studentDTO);
 			return ResponseEntity.ok(dto);
 		} catch (Exception e) {
 			String errorMessage = "Student with ID " + id + " not found. Please update the id.";

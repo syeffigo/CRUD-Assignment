@@ -13,10 +13,6 @@ import lombok.Setter;
 
 @Data
 @Entity
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class Student {
 
 	@Id
