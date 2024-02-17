@@ -33,8 +33,8 @@ public class StudentService {
 	public StudentDTO getStudent(Integer id) {
 		log.info("Fetching student with ID {}", id);
 		Optional<Student> student = studentRepository.findById(id);
-		Student cur_student = student.get();
-		StudentDTO data = studentMapper.convertToDTO(cur_student);
+		Student curstudent = student.get();
+		StudentDTO data = studentMapper.convertToDTO(curstudent);
 		log.debug("Fetched student details: {}", data);
 		return data;
 	}
